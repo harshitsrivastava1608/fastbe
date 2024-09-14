@@ -1,5 +1,7 @@
+const {con} = require('../config/sqldbConnection');
 const { User } = require('../models/userbase.model');
 const logger = require('./../config/logger')
+
 const handler = async(req,res) => {
     logger.info('server in running')
     // const userDoc = new User({name:'Aashu'});
@@ -9,4 +11,13 @@ const handler = async(req,res) => {
     console.log('userllist',userList);
     res.status(201).send({'msg':'API Responded Successfully'});
 }
-module.exports = {handler}
+const createUser = async(req,res)=>{
+    console.log('req',req.body);
+   const {email,name}=req.body;
+   await con.query('INSERT INTO userbase (name,email) VALUES ($1,$2) RETURNING *',[name,email],(error,results)=>{
+    if(error)
+        throw error;
+    res.status(201).send('User Added!')
+   })
+}
+module.exports = {handler,createUser}
